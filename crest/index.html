@@ -1,0 +1,1389 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Housewarming invite</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Cinzel:wght@500;600;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,400;1,500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        /* Clinical-Heritage Palette: Warm Ivory, Medical Slate-Teal & Burnished Gold */
+        --paper: #f9f6f0;
+        --ink: #1b363c;
+        --soft: #556e73;
+        --teal: #2e6f73;
+        --gold: #b6914d;
+        --gold-bright: #c9a45c;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        min-height: 100vh;
+        background: #131e21;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 18px;
+        padding: 24px 16px;
+        font-family: 'Cormorant Garamond', Georgia, serif;
+      }
+
+      .stage {
+        position: relative;
+        width: min(420px, 92vw);
+        aspect-ratio: 9/16;
+        max-height: 88vh;
+        background: radial-gradient(
+          ellipse at 50% 28%,
+          #ffffff 0%,
+          var(--paper) 65%,
+          #f1ece1 100%
+        );
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow:
+          0 22px 55px rgba(0, 0, 0, 0.55),
+          inset 0 0 0 1px rgba(182, 145, 77, 0.28);
+      }
+
+      /* Subtle architectural & ECG graph grid */
+      .blueprint-grid {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        opacity: 0.24;
+        background-image:
+          linear-gradient(
+            to right,
+            rgba(46, 111, 115, 0.08) 1px,
+            transparent 1px
+          ),
+          linear-gradient(
+            to bottom,
+            rgba(46, 111, 115, 0.08) 1px,
+            transparent 1px
+          ),
+          linear-gradient(
+            to right,
+            rgba(182, 145, 77, 0.09) 1px,
+            transparent 1px
+          ),
+          linear-gradient(
+            to bottom,
+            rgba(182, 145, 77, 0.09) 1px,
+            transparent 1px
+          );
+        background-size:
+          14px 14px,
+          14px 14px,
+          70px 70px,
+          70px 70px;
+      }
+      .grain {
+        position: absolute;
+        inset: 0;
+        opacity: 0.32;
+        mix-blend-mode: multiply;
+        pointer-events: none;
+      }
+
+      /* Layered Clinical-Heritage Frame */
+      .frame-outer {
+        position: absolute;
+        inset: 14px;
+        border: 1px solid rgba(182, 145, 77, 0.42);
+        border-radius: 4px;
+        pointer-events: none;
+        z-index: 3;
+      }
+      .frame-inner {
+        position: absolute;
+        inset: 19px;
+        border: 0.5px dashed rgba(46, 111, 115, 0.28);
+        pointer-events: none;
+        z-index: 3;
+      }
+
+      /* Corner PCB Trace + Medical Cross Fiducials */
+      .corner-mark {
+        position: absolute;
+        width: 36px;
+        height: 36px;
+        z-index: 4;
+        pointer-events: none;
+        color: var(--gold);
+        opacity: 0.75;
+      }
+      .cm-tl {
+        top: 14px;
+        left: 14px;
+      }
+      .cm-tr {
+        top: 14px;
+        right: 14px;
+        transform: scaleX(-1);
+      }
+      .cm-bl {
+        bottom: 14px;
+        left: 14px;
+        transform: scaleY(-1);
+      }
+      .cm-br {
+        bottom: 14px;
+        right: 14px;
+        transform: scale(-1, -1);
+      }
+
+      /* Ambient Canvas Layer for bespoke kinetic clinical & tech elements */
+      .layer {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+        pointer-events: none;
+      }
+      .z2 {
+        z-index: 2;
+      }
+      .z6 {
+        z-index: 6;
+      }
+
+      /* 1. Rising Buoyant Clinical Micro-Bubbles & Warm Gold Light Motes */
+      @keyframes riseUp {
+        0% {
+          transform: translateY(40px) scale(0.8);
+          opacity: 0;
+        }
+        18% {
+          opacity: var(--op, 0.45);
+        }
+        82% {
+          opacity: var(--op, 0.45);
+        }
+        100% {
+          transform: translateY(calc(var(--rise, 900px) * -1)) scale(1.08);
+          opacity: 0;
+        }
+      }
+      @keyframes driftX {
+        from {
+          transform: translateX(calc(var(--sway) * -1));
+        }
+        to {
+          transform: translateX(var(--sway));
+        }
+      }
+      @keyframes slowSpin {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      .riser {
+        position: absolute;
+        bottom: 0;
+        will-change: transform;
+      }
+      .riser-sway {
+        display: block;
+        animation: driftX ease-in-out infinite alternate;
+      }
+      .riser-spin {
+        display: block;
+        animation: slowSpin linear infinite;
+      }
+      .riser svg {
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
+
+      /* 2. Traveling Border Telemetry Pulses (light nodes tracing the golden frame!) */
+      .border-pulse-layer {
+        position: absolute;
+        inset: 14px;
+        z-index: 4;
+        pointer-events: none;
+      }
+      .border-pulse-layer svg {
+        width: 100%;
+        height: 100%;
+        overflow: visible;
+      }
+      .trace-runner {
+        stroke-dasharray: 46 860;
+        animation: runPerimeter 9s linear infinite;
+      }
+      .trace-runner.rev {
+        stroke-dasharray: 34 860;
+        animation: runPerimeterRev 11s linear infinite;
+      }
+      @keyframes runPerimeter {
+        from {
+          stroke-dashoffset: 906;
+        }
+        to {
+          stroke-dashoffset: 0;
+        }
+      }
+      @keyframes runPerimeterRev {
+        from {
+          stroke-dashoffset: 0;
+        }
+        to {
+          stroke-dashoffset: 894;
+        }
+      }
+
+      /* 3. Ambient Dual-Strand DNA & Circuit Ribbons along the Left & Right Margins */
+      .side-helix {
+        position: absolute;
+        top: 14%;
+        height: 72%;
+        width: 24px;
+        opacity: 0.22;
+        pointer-events: none;
+        z-index: 2;
+      }
+      .sh-left {
+        left: 22px;
+      }
+      .sh-right {
+        right: 22px;
+        transform: scaleX(-1);
+      }
+      .helix-wave {
+        stroke-dasharray: 6 6;
+        animation: helixFlow 8s linear infinite;
+      }
+      @keyframes helixFlow {
+        from {
+          stroke-dashoffset: 48;
+        }
+        to {
+          stroke-dashoffset: 0;
+        }
+      }
+
+      /* Main Layout */
+      .content {
+        position: absolute;
+        inset: 0;
+        z-index: 5;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-between;
+        text-align: center;
+        padding: 5.5% 7.5% 5.5%;
+      }
+
+      .top-header {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .rx-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-family: 'Cinzel', serif;
+        font-size: 8.5px;
+        font-weight: 600;
+        letter-spacing: 2.4px;
+        text-transform: uppercase;
+        color: var(--teal);
+        margin-bottom: 2px;
+      }
+      .rx-pill span {
+        color: var(--gold);
+        font-size: 11px;
+        font-family: 'Cormorant Garamond', serif;
+        font-style: italic;
+        font-weight: 700;
+      }
+
+      .arch-type {
+        width: 100%;
+        overflow: visible;
+        margin-bottom: -8px;
+      }
+      .arch-type text {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 14.5px;
+        font-weight: 600;
+        letter-spacing: 4px;
+        fill: var(--ink);
+        text-transform: uppercase;
+      }
+
+      /* HERO PIECE: Architectural Home Framed by Stethoscope-Heart, Orbital Rings & Live ECG */
+      .home-hero {
+        position: relative;
+        width: 72%;
+        max-width: 265px;
+        aspect-ratio: 1/0.86;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: -2px auto 0;
+      }
+      .hero-halo {
+        position: absolute;
+        inset: 8%;
+        border-radius: 50%;
+        background: radial-gradient(
+          circle,
+          rgba(46, 111, 115, 0.14) 0%,
+          rgba(182, 145, 77, 0.12) 48%,
+          transparent 72%
+        );
+        animation: haloBreathe 4.2s ease-in-out infinite alternate;
+      }
+      @keyframes haloBreathe {
+        from {
+          transform: scale(0.92);
+          opacity: 0.65;
+        }
+        to {
+          transform: scale(1.06);
+          opacity: 1;
+        }
+      }
+      .home-svg {
+        width: 100%;
+        height: 100%;
+        overflow: visible;
+        position: relative;
+        z-index: 2;
+      }
+
+      /* Counter-rotating precision clinical & orbital tech rings */
+      .dial-cw {
+        transform-origin: 140px 118px;
+        animation: spinCW 44s linear infinite;
+      }
+      .dial-ccw {
+        transform-origin: 140px 118px;
+        animation: spinCCW 32s linear infinite;
+      }
+      @keyframes spinCW {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      @keyframes spinCCW {
+        from {
+          transform: rotate(360deg);
+        }
+        to {
+          transform: rotate(0deg);
+        }
+      }
+
+      /* Gentle heartbeat thump on the stethoscope chestpiece */
+      .heart-beat {
+        transform-origin: 140px 215px;
+        animation: lubDub 2.2s ease-in-out infinite;
+      }
+      @keyframes lubDub {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        14% {
+          transform: scale(1.2);
+        }
+        28% {
+          transform: scale(1);
+        }
+        42% {
+          transform: scale(1.13);
+        }
+        56% {
+          transform: scale(1);
+        }
+      }
+
+      /* Animated ECG heartbeat trace running along the porch / foundation */
+      .ecg-live {
+        stroke-dasharray: 280;
+        stroke-dashoffset: 280;
+        animation: ecgFlow 3.4s linear infinite;
+      }
+      @keyframes ecgFlow {
+        0% {
+          stroke-dashoffset: 280;
+          opacity: 0.25;
+        }
+        25% {
+          opacity: 1;
+        }
+        75% {
+          stroke-dashoffset: 0;
+          opacity: 1;
+        }
+        100% {
+          stroke-dashoffset: -280;
+          opacity: 0.25;
+        }
+      }
+
+      /* Traveling tech data packet pulses along the side PCB traces */
+      .pcb-pulse {
+        stroke-dasharray: 12 40;
+        animation: pcbFlow 2.6s linear infinite;
+      }
+      @keyframes pcbFlow {
+        from {
+          stroke-dashoffset: 52;
+        }
+        to {
+          stroke-dashoffset: 0;
+        }
+      }
+
+      /* Warm window glow inside the home */
+      .win-glow {
+        animation: winWarmth 3.8s ease-in-out infinite alternate;
+      }
+      @keyframes winWarmth {
+        from {
+          opacity: 0.62;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      /* Rising warm chimney sparks (healing crosses & gold dots) */
+      .spark {
+        animation: riseSpark 3.6s ease-out infinite;
+      }
+      .spark.s2 {
+        animation-delay: 1.2s;
+      }
+      .spark.s3 {
+        animation-delay: 2.4s;
+      }
+      @keyframes riseSpark {
+        0% {
+          transform: translateY(0) scale(0.7);
+          opacity: 0;
+        }
+        30% {
+          opacity: 0.85;
+        }
+        100% {
+          transform: translateY(-24px) scale(1.25);
+          opacity: 0;
+        }
+      }
+
+      .kicker {
+        font-family: 'Cormorant Garamond', serif;
+        font-style: italic;
+        font-size: clamp(12.5px, 3.2vw, 14.5px);
+        letter-spacing: 0.6px;
+        color: var(--soft);
+      }
+      .names {
+        font-family: 'Alex Brush', cursive;
+        font-size: clamp(26px, 7vw, 33px);
+        color: var(--ink);
+        line-height: 1.08;
+        margin-top: 1px;
+      }
+      .sub-names {
+        font-family: 'Cormorant Garamond', serif;
+        font-weight: 600;
+        font-size: clamp(13px, 3.4vw, 15px);
+        letter-spacing: 0.5px;
+        color: var(--teal);
+        margin-top: 2px;
+      }
+      .sub-names em {
+        font-style: italic;
+        font-weight: 400;
+        color: var(--soft);
+      }
+
+      /* Caduceus + Circuit Trace Ornament Divider */
+      .ornament {
+        width: 72%;
+        margin: 1px auto;
+        color: var(--gold);
+      }
+      .ornament svg {
+        width: 100%;
+        height: 20px;
+        display: block;
+      }
+
+      .invite {
+        font-family: 'Cormorant Garamond', serif;
+        font-style: italic;
+        font-size: clamp(13.5px, 3.5vw, 15.5px);
+        letter-spacing: 0.4px;
+        color: var(--soft);
+        line-height: 1.35;
+      }
+      .invite strong {
+        display: block;
+        font-family: 'Cinzel', serif;
+        font-style: normal;
+        font-weight: 700;
+        font-size: clamp(12.5px, 3.3vw, 14.5px);
+        letter-spacing: 3.2px;
+        text-transform: uppercase;
+        color: var(--ink);
+        margin-top: 2px;
+      }
+
+      .details-card {
+        width: 94%;
+        background: rgba(255, 255, 255, 0.72);
+        border: 1px solid rgba(182, 145, 77, 0.34);
+        border-radius: 6px;
+        padding: 7px 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+        box-shadow: 0 4px 16px rgba(27, 54, 60, 0.05);
+        backdrop-filter: blur(2px);
+      }
+      .meta {
+        font-family: 'Cinzel', serif;
+        font-weight: 600;
+        font-size: clamp(11px, 2.9vw, 12.5px);
+        letter-spacing: 2.2px;
+        text-transform: uppercase;
+        color: var(--ink);
+      }
+      .meta .bar {
+        color: var(--gold);
+        margin: 0 8px;
+      }
+
+      .addr {
+        font-family: 'Cormorant Garamond', serif;
+        font-style: italic;
+        font-size: clamp(10.5px, 2.6vw, 11.8px);
+        letter-spacing: 0.2px;
+        line-height: 1.28;
+        color: var(--soft);
+      }
+
+      .map-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 3.5px 12px;
+        border-radius: 999px;
+        border: 1px solid rgba(182, 145, 77, 0.55);
+        background: linear-gradient(
+          135deg,
+          rgba(182, 145, 77, 0.14),
+          rgba(46, 111, 115, 0.08)
+        );
+        font-family: 'Cinzel', serif;
+        font-style: normal;
+        font-weight: 600;
+        font-size: 9px;
+        letter-spacing: 1.6px;
+        text-transform: uppercase;
+        color: var(--ink);
+        text-decoration: none;
+        transition: all 0.2s ease;
+      }
+      .map-btn:hover {
+        border-color: var(--teal);
+        background: rgba(46, 111, 115, 0.14);
+      }
+      .map-btn svg {
+        width: 10px;
+        height: 10px;
+        flex-shrink: 0;
+        color: var(--teal);
+      }
+
+      [contenteditable] {
+        outline: none;
+        border-radius: 3px;
+      }
+      body.editing [contenteditable] {
+        box-shadow: 0 0 0 1px rgba(46, 111, 115, 0.32);
+        cursor: text;
+      }
+      [contenteditable]:focus {
+        box-shadow: 0 0 0 2px var(--teal) !important;
+      }
+
+      .controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: center;
+        align-items: center;
+        color: #99adb1;
+        font-size: 13px;
+        font-family: system-ui, sans-serif;
+      }
+      button {
+        font: inherit;
+        color: #f9f6f0;
+        background: #1e3a40;
+        border: 1px solid #3a636b;
+        border-radius: 999px;
+        padding: 7px 15px;
+        cursor: pointer;
+      }
+      button:hover {
+        background: #274b53;
+      }
+      body.recording .controls {
+        display: none;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .stage * {
+          animation: none !important;
+        }
+      }
+    </style>
+  </head>
+  <body class="editing">
+    <div class="stage" id="card">
+      <div class="blueprint-grid"></div>
+
+      <svg class="grain" aria-hidden="true">
+        <filter id="paper">
+          <feTurbulence
+            type="fractalNoise"
+            baseFrequency="0.85"
+            numOctaves="4"
+            stitchTiles="stitch"
+          />
+          <feColorMatrix type="saturate" values="0" />
+          <feComponentTransfer>
+            <feFuncA type="linear" slope="0.18" />
+          </feComponentTransfer>
+        </filter>
+        <rect width="100%" height="100%" filter="url(#paper)" />
+      </svg>
+
+      <div class="frame-outer"></div>
+      <div class="frame-inner"></div>
+
+      <!-- Traveling Light Telemetry Pulses along the Outer Golden Frame -->
+      <div class="border-pulse-layer" aria-hidden="true">
+        <svg viewBox="0 0 392 718" preserveAspectRatio="none" fill="none">
+          <rect
+            class="trace-runner"
+            x="0"
+            y="0"
+            width="392"
+            height="718"
+            rx="4"
+            stroke="#2E6F73"
+            stroke-width="1.5"
+            opacity="0.7"
+          />
+          <rect
+            class="trace-runner rev"
+            x="0"
+            y="0"
+            width="392"
+            height="718"
+            rx="4"
+            stroke="#C9A45C"
+            stroke-width="1.5"
+            opacity="0.85"
+          />
+        </svg>
+      </div>
+
+      <!-- Subtle Flowing DNA + Circuit Ribbons framing the Left & Right Margins -->
+      <svg
+        class="side-helix sh-left"
+        viewBox="0 0 24 400"
+        preserveAspectRatio="none"
+        fill="none"
+        aria-hidden="true"
+      >
+        <path
+          class="helix-wave"
+          d="M12 0 Q22 25 12 50 T12 100 T12 150 T12 200 T12 250 T12 300 T12 350 T12 400"
+          stroke="#2E6F73"
+          stroke-width="1"
+        />
+        <path
+          class="helix-wave"
+          d="M12 0 Q2 25 12 50 T12 100 T12 150 T12 200 T12 250 T12 300 T12 350 T12 400"
+          stroke="#B6914D"
+          stroke-width="0.9"
+        />
+      </svg>
+      <svg
+        class="side-helix sh-right"
+        viewBox="0 0 24 400"
+        preserveAspectRatio="none"
+        fill="none"
+        aria-hidden="true"
+      >
+        <path
+          class="helix-wave"
+          d="M12 0 Q22 25 12 50 T12 100 T12 150 T12 200 T12 250 T12 300 T12 350 T12 400"
+          stroke="#2E6F73"
+          stroke-width="1"
+        />
+        <path
+          class="helix-wave"
+          d="M12 0 Q2 25 12 50 T12 100 T12 150 T12 200 T12 250 T12 300 T12 350 T12 400"
+          stroke="#B6914D"
+          stroke-width="0.9"
+        />
+      </svg>
+
+      <!-- Corner PCB Trace + Medical Cross Fiducials -->
+      <svg
+        class="corner-mark cm-tl"
+        viewBox="0 0 36 36"
+        fill="none"
+        aria-hidden="true"
+      >
+        <path d="M2 22 V8 L8 2 H22" stroke="currentColor" stroke-width="1.1" />
+        <path d="M2 15 H9 L13 11 H19" stroke="#2E6F73" stroke-width="0.9" />
+        <circle cx="19" cy="11" r="1.6" fill="#2E6F73" />
+        <path
+          d="M8 6.5 V10.5 M6 8.5 H10"
+          stroke="currentColor"
+          stroke-width="1.1"
+        />
+      </svg>
+      <svg
+        class="corner-mark cm-tr"
+        viewBox="0 0 36 36"
+        fill="none"
+        aria-hidden="true"
+      >
+        <path d="M2 22 V8 L8 2 H22" stroke="currentColor" stroke-width="1.1" />
+        <path d="M2 15 H9 L13 11 H19" stroke="#2E6F73" stroke-width="0.9" />
+        <circle cx="19" cy="11" r="1.6" fill="#2E6F73" />
+        <path
+          d="M8 6.5 V10.5 M6 8.5 H10"
+          stroke="currentColor"
+          stroke-width="1.1"
+        />
+      </svg>
+      <svg
+        class="corner-mark cm-bl"
+        viewBox="0 0 36 36"
+        fill="none"
+        aria-hidden="true"
+      >
+        <path d="M2 22 V8 L8 2 H22" stroke="currentColor" stroke-width="1.1" />
+        <path d="M2 15 H9 L13 11 H19" stroke="#2E6F73" stroke-width="0.9" />
+        <circle cx="19" cy="11" r="1.6" fill="#2E6F73" />
+        <path
+          d="M8 6.5 V10.5 M6 8.5 H10"
+          stroke="currentColor"
+          stroke-width="1.1"
+        />
+      </svg>
+      <svg
+        class="corner-mark cm-br"
+        viewBox="0 0 36 36"
+        fill="none"
+        aria-hidden="true"
+      >
+        <path d="M2 22 V8 L8 2 H22" stroke="currentColor" stroke-width="1.1" />
+        <path d="M2 15 H9 L13 11 H19" stroke="#2E6F73" stroke-width="0.9" />
+        <circle cx="19" cy="11" r="1.6" fill="#2E6F73" />
+        <path
+          d="M8 6.5 V10.5 M6 8.5 H10"
+          stroke="currentColor"
+          stroke-width="1.1"
+        />
+      </svg>
+
+      <!-- Rising Buoyant Clinical & Tech Micro-Motes Layer -->
+      <div class="layer z2" id="risers"></div>
+
+      <div class="content">
+        <div class="top-header">
+          <div class="rx-pill" contenteditable>
+            <span>℞</span> Care, Code &amp; Home
+          </div>
+          <svg class="arch-type" viewBox="0 0 340 58" aria-hidden="false">
+            <path id="arc" d="M18,64 A166,82 0 0,1 322,64" fill="none" />
+            <text text-anchor="middle">
+              <textPath href="#arc" startOffset="50%" contenteditable>
+                A new chapter begins
+              </textPath>
+            </text>
+          </svg>
+        </div>
+
+        <!-- HERO ILLUSTRATION: Architectural Home Framed by Stethoscope-Heart, Counter-Rotating Dials & Live ECG -->
+        <div class="home-hero">
+          <div class="hero-halo"></div>
+          <svg
+            class="home-svg"
+            viewBox="0 0 280 236"
+            fill="none"
+            aria-hidden="true"
+          >
+            <defs>
+              <linearGradient
+                id="roofGrad"
+                x1="65"
+                y1="68"
+                x2="215"
+                y2="122"
+                gradientUnits="userSpaceOnUse"
+              >
+                <stop offset="0%" stop-color="#224C52" />
+                <stop offset="100%" stop-color="#173439" />
+              </linearGradient>
+              <linearGradient
+                id="wallGrad"
+                x1="82"
+                y1="112"
+                x2="198"
+                y2="188"
+                gradientUnits="userSpaceOnUse"
+              >
+                <stop offset="0%" stop-color="#FFFFFF" />
+                <stop offset="100%" stop-color="#EFE9DC" />
+              </linearGradient>
+              <linearGradient
+                id="goldStroke"
+                x1="40"
+                y1="20"
+                x2="240"
+                y2="215"
+                gradientUnits="userSpaceOnUse"
+              >
+                <stop offset="0%" stop-color="#C9A45C" />
+                <stop offset="50%" stop-color="#B6914D" />
+                <stop offset="100%" stop-color="#967334" />
+              </linearGradient>
+            </defs>
+
+            <!-- Counter-rotating precision clinical & orbital tech rings with orbiting node -->
+            <g class="dial-cw">
+              <circle
+                cx="140"
+                cy="118"
+                r="106"
+                stroke="rgba(46,111,115,0.28)"
+                stroke-width="1.1"
+                stroke-dasharray="4 5"
+              />
+              <circle cx="140" cy="12" r="2.6" fill="#2E6F73" />
+              <circle cx="140" cy="224" r="2.6" fill="#2E6F73" />
+            </g>
+            <g class="dial-ccw">
+              <circle
+                cx="140"
+                cy="118"
+                r="98"
+                stroke="rgba(182,145,77,0.32)"
+                stroke-width="0.9"
+                stroke-dasharray="14 6"
+              />
+              <circle cx="238" cy="118" r="2.2" fill="#B6914D" />
+              <circle cx="42" cy="118" r="2.2" fill="#B6914D" />
+            </g>
+
+            <!-- Animated Tech PCB traces extending from the dial ring -->
+            <path
+              d="M34 118 H12 L6 112"
+              stroke="rgba(46,111,115,0.25)"
+              stroke-width="1.2"
+            />
+            <path
+              class="pcb-pulse"
+              d="M34 118 H12 L6 112"
+              stroke="#2E6F73"
+              stroke-width="1.4"
+            />
+            <circle cx="6" cy="112" r="2.2" fill="#2E6F73" />
+
+            <path
+              d="M246 118 H268 L274 112"
+              stroke="rgba(46,111,115,0.25)"
+              stroke-width="1.2"
+            />
+            <path
+              class="pcb-pulse"
+              d="M246 118 H268 L274 112"
+              stroke="#2E6F73"
+              stroke-width="1.4"
+            />
+            <circle cx="274" cy="112" r="2.2" fill="#2E6F73" />
+
+            <!-- Stethoscope Earpieces at top -->
+            <path
+              d="M110 30 C98 30, 91 40, 94 54 C96 67, 110 75, 122 78"
+              stroke="url(#goldStroke)"
+              stroke-width="2.4"
+              stroke-linecap="round"
+            />
+            <circle cx="111" cy="30" r="3.2" fill="#2E6F73" />
+            <path
+              d="M170 30 C182 30, 189 40, 186 54 C184 67, 170 75, 158 78"
+              stroke="url(#goldStroke)"
+              stroke-width="2.4"
+              stroke-linecap="round"
+            />
+            <circle cx="169" cy="30" r="3.2" fill="#2E6F73" />
+
+            <!-- Stethoscope Tubing forming a Protective Heart around the House -->
+            <path
+              d="M140 206 C82 172, 52 134, 55 96 C58 70, 84 58, 110 74 C124 83, 133 93, 140 100 C147 93, 156 83, 170 74 C196 58, 222 70, 225 96 C228 134, 198 172, 140 206 Z"
+              stroke="url(#goldStroke)"
+              stroke-width="2.6"
+              fill="rgba(255,255,255,0.55)"
+            />
+
+            <!-- Heartbeat-pulsing Stethoscope Diaphragm Chestpiece at bottom apex -->
+            <g class="heart-beat">
+              <circle
+                cx="140"
+                cy="215"
+                r="9"
+                fill="#F9F6F0"
+                stroke="#B6914D"
+                stroke-width="2.2"
+              />
+              <circle cx="140" cy="215" r="4" fill="#2E6F73" />
+            </g>
+
+            <!-- ARCHITECTURAL HOME CENTERPIECE -->
+            <!-- Rising warm chimney sparks (healing crosses & gold nodes) -->
+            <g class="spark s1">
+              <path
+                d="M181 66 V70 M179 68 H183"
+                stroke="#B6914D"
+                stroke-width="1.2"
+                stroke-linecap="round"
+              />
+            </g>
+            <g class="spark s2">
+              <circle cx="184" cy="64" r="1.6" fill="#2E6F73" />
+            </g>
+            <g class="spark s3">
+              <path
+                d="M179 65 V69 M177 67 H181"
+                stroke="#2E6F73"
+                stroke-width="1.1"
+                stroke-linecap="round"
+              />
+            </g>
+
+            <!-- Chimney -->
+            <rect
+              x="174"
+              y="76"
+              width="14"
+              height="28"
+              rx="1.5"
+              fill="#2E6F73"
+              stroke="#1B363C"
+              stroke-width="1.2"
+            />
+            <rect x="172" y="73" width="18" height="4" rx="1" fill="#B6914D" />
+
+            <!-- Main House Facade -->
+            <path
+              d="M84 114 L140 70 L196 114 V174 H84 Z"
+              fill="url(#wallGrad)"
+              stroke="#1B363C"
+              stroke-width="1.6"
+              stroke-linejoin="round"
+            />
+            <rect
+              x="92"
+              y="116"
+              width="96"
+              height="58"
+              fill="rgba(46,111,115,0.06)"
+            />
+
+            <!-- Pitched Roof with Overhang & Gold Trim -->
+            <path
+              d="M72 118 L140 64 L208 118 L201 125 L140 76 L79 125 Z"
+              fill="url(#roofGrad)"
+              stroke="#1B363C"
+              stroke-width="1.4"
+              stroke-linejoin="round"
+            />
+            <path
+              d="M76 117 L140 67 L204 117"
+              stroke="#C9A45C"
+              stroke-width="1.3"
+              stroke-linecap="round"
+            />
+
+            <!-- Medical Cross Medallion in Gable Peak -->
+            <circle
+              cx="140"
+              cy="94"
+              r="11"
+              fill="#F9F6F0"
+              stroke="#B6914D"
+              stroke-width="1.4"
+            />
+            <path
+              d="M140 88.5 V99.5 M134.5 94 H145.5"
+              stroke="#2E6F73"
+              stroke-width="2.2"
+              stroke-linecap="round"
+            />
+
+            <!-- Arched Front Door -->
+            <path
+              d="M126 174 V134 A14 14 0 0 1 154 134 V174 Z"
+              fill="#2E6F73"
+              stroke="#1B363C"
+              stroke-width="1.4"
+            />
+            <path
+              d="M130 174 V135 A10 10 0 0 1 150 135 V174"
+              stroke="rgba(255,255,255,0.35)"
+              stroke-width="1"
+            />
+            <circle cx="148" cy="154" r="2" fill="#ECCB88" />
+
+            <!-- Warm Glowing Left & Right Mullioned Windows -->
+            <g class="win-glow">
+              <rect
+                x="96"
+                y="130"
+                width="20"
+                height="24"
+                rx="2"
+                fill="#F6DF9E"
+                stroke="#1B363C"
+                stroke-width="1.3"
+              />
+              <path
+                d="M106 130 V154 M96 142 H116"
+                stroke="#1B363C"
+                stroke-width="1"
+              />
+              <rect
+                x="164"
+                y="130"
+                width="20"
+                height="24"
+                rx="2"
+                fill="#F6DF9E"
+                stroke="#1B363C"
+                stroke-width="1.3"
+              />
+              <path
+                d="M174 130 V154 M164 142 H184"
+                stroke="#1B363C"
+                stroke-width="1"
+              />
+            </g>
+
+            <!-- Stone Steps / Foundation -->
+            <rect
+              x="76"
+              y="174"
+              width="128"
+              height="6"
+              rx="1.5"
+              fill="#D5CBB8"
+              stroke="#1B363C"
+              stroke-width="1.1"
+            />
+            <rect
+              x="68"
+              y="180"
+              width="144"
+              height="6"
+              rx="1.5"
+              fill="#C4B8A1"
+              stroke="#1B363C"
+              stroke-width="1.1"
+            />
+
+            <!-- Live ECG Heartbeat Pulse Line across the Foundation -->
+            <path
+              d="M62 183 H114 L119 175 L124 191 L130 166 L136 195 L141 176 L145 183 H218"
+              stroke="rgba(46,111,115,0.25)"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <path
+              class="ecg-live"
+              d="M62 183 H114 L119 175 L124 191 L130 166 L136 195 L141 176 L145 183 H218"
+              stroke="#2E6F73"
+              stroke-width="2.1"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </div>
+
+        <div>
+          <p class="kicker" contenteditable>
+            With joyful hearts &amp; warm wishes
+          </p>
+          <div class="names" contenteditable>
+            Dr. Thirunavukkarasu &amp; Dr. Shanthi
+          </div>
+          <p class="sub-names" contenteditable>
+            <em>along with</em> Dr. Deepika &amp; Er. Shivcharan
+          </p>
+        </div>
+
+        <!-- Caduceus + Circuit Trace Divider -->
+        <div class="ornament" aria-hidden="true">
+          <svg viewBox="0 0 240 20" fill="none">
+            <circle cx="8" cy="10" r="2" fill="#2E6F73" />
+            <path
+              d="M10 10 H62 L68 5 H86 L91 10 H106"
+              stroke="currentColor"
+              stroke-width="1.1"
+              stroke-linecap="round"
+            />
+            <!-- Caduceus -->
+            <line
+              x1="120"
+              y1="2"
+              x2="120"
+              y2="18"
+              stroke="#2E6F73"
+              stroke-width="1.3"
+              stroke-linecap="round"
+            />
+            <circle cx="120" cy="2.5" r="1.6" fill="currentColor" />
+            <path
+              d="M119 5.5 C113 3.8, 108 4.8, 106 6.8 C109 7.8, 114 7.8, 119 7"
+              stroke="currentColor"
+              stroke-width="1.05"
+            />
+            <path
+              d="M121 5.5 C127 3.8, 132 4.8, 134 6.8 C131 7.8, 126 7.8, 121 7"
+              stroke="currentColor"
+              stroke-width="1.05"
+            />
+            <path
+              d="M116 9 C124 10.8, 116 13.2, 124 15"
+              stroke="currentColor"
+              stroke-width="1"
+              stroke-linecap="round"
+            />
+            <path
+              d="M124 9 C116 10.8, 124 13.2, 116 15"
+              stroke="currentColor"
+              stroke-width="1"
+              stroke-linecap="round"
+            />
+            <path
+              d="M134 10 H149 L154 5 H172 L178 10 H230"
+              stroke="currentColor"
+              stroke-width="1.1"
+              stroke-linecap="round"
+            />
+            <circle cx="232" cy="10" r="2" fill="#2E6F73" />
+          </svg>
+        </div>
+
+        <p class="invite" contenteditable>
+          cordially invite you to grace the
+          <strong>Housewarming Celebration</strong>
+        </p>
+
+        <div class="details-card">
+          <p class="meta">
+            <span contenteditable>Sunday</span><span class="bar">✦</span
+            ><span contenteditable>20th November</span>
+          </p>
+          <p class="addr" contenteditable>
+            Pacific Oyster Apartments, No. S-1, 2nd Floor, Door No. 9,<br />Samayapurathu
+            Amman Koil St, Choolaimedu, Chennai - 600094
+          </p>
+        </div>
+
+        <a
+          class="map-btn"
+          href="https://maps.app.goo.gl/zSawMcs3Xi9KWxDZ6"
+          target="_blank"
+          rel="noopener"
+          aria-label="Open location in Google Maps"
+        >
+          <svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true">
+            <path
+              d="M128,64a40,40,0,1,0,40,40A40,40,0,0,0,128,64Zm0,64a24,24,0,1,1,24-24A24,24,0,0,1,128,128Zm0-112a88.1,88.1,0,0,0-88,88c0,31.4,14.51,64.68,42,96.25a254.19,254.19,0,0,0,41.45,38.3,8,8,0,0,0,9.18,0A254.19,254.19,0,0,0,174,200.25c27.45-31.57,42-64.85,42-96.25A88.1,88.1,0,0,0,128,16Zm0,206c-16.53-13-72-60.75-72-118a72,72,0,0,1,144,0C200,161.23,144.53,209,128,222Z"
+            />
+          </svg>
+          <span>Open in Google Maps ↗</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="controls" id="controls">
+      <button id="record">Hide this bar</button>
+      <button id="reshuffle">Shuffle motes</button>
+      <span>Click any line to type your own details.</span>
+    </div>
+
+    <script>
+      /* Bespoke geometric clinical & tech micro-motes (no borrowed floral shapes) */
+      var MOTES = {
+        crossRing: function (c) {
+          return (
+            '<svg viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="13" stroke="' +
+            c +
+            '" stroke-width="1.2" stroke-dasharray="3 3"/><path d="M16 10 V22 M10 16 H22" stroke="' +
+            c +
+            '" stroke-width="1.8" stroke-linecap="round"/></svg>'
+          );
+        },
+        hexNode: function (c) {
+          return (
+            '<svg viewBox="0 0 32 32" fill="none"><polygon points="16,3 27,9.5 27,22.5 16,29 5,22.5 5,9.5" stroke="' +
+            c +
+            '" stroke-width="1.3"/><circle cx="16" cy="16" r="2.5" fill="' +
+            c +
+            '"/></svg>'
+          );
+        },
+        pulseSpark: function (c) {
+          return (
+            '<svg viewBox="0 0 32 32" fill="none"><path d="M4 16 H11 L14 9 L18 23 L21 16 H28" stroke="' +
+            c +
+            '" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+          );
+        },
+        capsuleRing: function (c) {
+          return (
+            '<svg viewBox="0 0 32 32" fill="none"><rect x="10" y="5" width="12" height="22" rx="6" transform="rotate(35 16 16)" stroke="' +
+            c +
+            '" stroke-width="1.4"/><line x1="11" y1="12" x2="21" y2="20" stroke="' +
+            c +
+            '" stroke-width="1.2"/></svg>'
+          );
+        },
+        orbitDot: function (c) {
+          return (
+            '<svg viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="10" stroke="' +
+            c +
+            '" stroke-width="1"/><circle cx="16" cy="6" r="2.4" fill="' +
+            c +
+            '"/></svg>'
+          );
+        },
+      };
+
+      var KEYS = [
+        'crossRing',
+        'hexNode',
+        'pulseSpark',
+        'capsuleRing',
+        'orbitDot',
+      ];
+      var TEAL = ['#2E6F73', '#498A8E'];
+      var GOLD = ['#B6914D', '#C9A45C'];
+
+      function rnd(a, b) {
+        return a + Math.random() * (b - a);
+      }
+      function pick(a) {
+        return a[Math.floor(Math.random() * a.length)];
+      }
+
+      var card = document.getElementById('card');
+
+      function buildRisers() {
+        var layer = document.getElementById('risers');
+        layer.innerHTML = '';
+        // 14 buoyant clinical & tech micro-motes rising gently from the bottom border like warm energy/vitality
+        for (var i = 0; i < 14; i++) {
+          var key = pick(KEYS);
+          var isGold =
+            key === 'hexNode' || key === 'orbitDot' || Math.random() < 0.45;
+          var color = isGold ? pick(GOLD) : pick(TEAL);
+          var size = rnd(12, 19);
+          var dur = rnd(14, 25);
+
+          var el = document.createElement('div');
+          el.className = 'riser';
+          // Keep mostly toward left & right channels so the center text stays super legible
+          var lane = i % 2 === 0 ? rnd(6, 28) : rnd(70, 92);
+          el.style.left = lane + '%';
+          el.style.width = size + 'px';
+          el.style.height = size + 'px';
+          el.style.setProperty('--op', rnd(0.24, 0.44).toFixed(2));
+          el.style.animation = 'riseUp ' + dur.toFixed(1) + 's linear infinite';
+          el.style.animationDelay = '-' + rnd(0, dur).toFixed(1) + 's';
+
+          var s = document.createElement('span');
+          s.className = 'riser-sway';
+          s.style.setProperty('--sway', rnd(6, 16).toFixed(0) + 'px');
+          s.style.animationDuration = rnd(3, 6).toFixed(1) + 's';
+          s.style.animationDelay = '-' + rnd(0, 4).toFixed(1) + 's';
+
+          var r = document.createElement('span');
+          r.className = 'riser-spin';
+          r.style.animationDuration = rnd(14, 28).toFixed(1) + 's';
+          r.style.animationDirection =
+            Math.random() > 0.5 ? 'normal' : 'reverse';
+          r.innerHTML = MOTES[key](color);
+
+          s.appendChild(r);
+          el.appendChild(s);
+          layer.appendChild(el);
+        }
+      }
+
+      function measure() {
+        card.style.setProperty('--rise', card.clientHeight + 80 + 'px');
+      }
+
+      buildRisers();
+      measure();
+      window.addEventListener('resize', measure);
+
+      document
+        .getElementById('reshuffle')
+        .addEventListener('click', buildRisers);
+      document.getElementById('record').addEventListener('click', function () {
+        document.body.classList.add('recording');
+        document.body.classList.remove('editing');
+      });
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+          document.body.classList.remove('recording');
+          document.body.classList.add('editing');
+        }
+      });
+      document.addEventListener('focusin', function (e) {
+        if (e.target.isContentEditable) document.body.classList.add('editing');
+      });
+    </script>
+  </body>
+</html>
