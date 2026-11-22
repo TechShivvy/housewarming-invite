@@ -96,22 +96,6 @@
         pointer-events: none;
       }
 
-      /* Layered Clinical-Heritage Frame */
-      .frame-outer {
-        position: absolute;
-        inset: 14px;
-        border: 1px solid rgba(182, 145, 77, 0.42);
-        border-radius: 4px;
-        pointer-events: none;
-        z-index: 3;
-      }
-      .frame-inner {
-        position: absolute;
-        inset: 19px;
-        border: 0.5px dashed rgba(46, 111, 115, 0.28);
-        pointer-events: none;
-        z-index: 3;
-      }
 
       /* Corner PCB Trace + Medical Cross Fiducials */
       .corner-mark {
@@ -622,43 +606,7 @@
         color: var(--teal);
       }
 
-      [contenteditable] {
-        outline: none;
-        border-radius: 3px;
-      }
-      body.editing [contenteditable] {
-        box-shadow: 0 0 0 1px rgba(46, 111, 115, 0.32);
-        cursor: text;
-      }
-      [contenteditable]:focus {
-        box-shadow: 0 0 0 2px var(--teal) !important;
-      }
 
-      .controls {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-        justify-content: center;
-        align-items: center;
-        color: #99adb1;
-        font-size: 13px;
-        font-family: system-ui, sans-serif;
-      }
-      button {
-        font: inherit;
-        color: #f9f6f0;
-        background: #1e3a40;
-        border: 1px solid #3a636b;
-        border-radius: 999px;
-        padding: 7px 15px;
-        cursor: pointer;
-      }
-      button:hover {
-        background: #274b53;
-      }
-      body.recording .controls {
-        display: none;
-      }
 
       @media (prefers-reduced-motion: reduce) {
         .stage * {
@@ -667,7 +615,7 @@
       }
     </style>
   </head>
-  <body class="editing">
+  <body>
     <div class="stage" id="card">
       <div class="blueprint-grid"></div>
 
@@ -687,8 +635,6 @@
         <rect width="100%" height="100%" filter="url(#paper)" />
       </svg>
 
-      <div class="frame-outer"></div>
-      <div class="frame-inner"></div>
 
       <!-- Traveling Light Telemetry Pulses along the Outer Golden Frame -->
       <div class="border-pulse-layer" aria-hidden="true">
@@ -827,13 +773,13 @@
 
       <div class="content">
         <div class="top-header">
-          <div class="rx-pill" contenteditable>
+          <div class="rx-pill">
             <span>℞</span> Care, Code &amp; Home
           </div>
           <svg class="arch-type" viewBox="0 0 340 58" aria-hidden="false">
             <path id="arc" d="M18,64 A166,82 0 0,1 322,64" fill="none" />
             <text text-anchor="middle">
-              <textPath href="#arc" startOffset="50%" contenteditable>
+              <textPath href="#arc" startOffset="50%">
                 A new chapter begins
               </textPath>
             </text>
@@ -1148,13 +1094,13 @@
         </div>
 
         <div>
-          <p class="kicker" contenteditable>
+          <p class="kicker">
             With joyful hearts &amp; warm wishes
           </p>
-          <div class="names" contenteditable>
+          <div class="names">
             Dr. Thirunavukkarasu &amp; Dr. Shanthi
           </div>
-          <p class="sub-names" contenteditable>
+          <p class="sub-names">
             <em>along with</em> Dr. Deepika &amp; Er. Shivcharan
           </p>
         </div>
@@ -1212,17 +1158,17 @@
           </svg>
         </div>
 
-        <p class="invite" contenteditable>
+        <p class="invite">
           cordially invite you to grace the
           <strong>Housewarming Celebration</strong>
         </p>
 
         <div class="details-card">
           <p class="meta">
-            <span contenteditable>Sunday</span><span class="bar">✦</span
-            ><span contenteditable>20th November</span>
+            <span>Sunday</span><span class="bar">✦</span
+            ><span>20th November</span>
           </p>
-          <p class="addr" contenteditable>
+          <p class="addr">
             Pacific Oyster Apartments, No. S-1, 2nd Floor, Door No. 9,<br />Samayapurathu
             Amman Koil St, Choolaimedu, Chennai - 600094
           </p>
@@ -1243,12 +1189,6 @@
           <span>Open in Google Maps ↗</span>
         </a>
       </div>
-    </div>
-
-    <div class="controls" id="controls">
-      <button id="record">Hide this bar</button>
-      <button id="reshuffle">Shuffle motes</button>
-      <span>Click any line to type your own details.</span>
     </div>
 
     <script>
@@ -1309,11 +1249,20 @@
       var TEAL = ['#2E6F73', '#498A8E'];
       var GOLD = ['#B6914D', '#C9A45C'];
 
+      var loadTimestamp = Date.now();
+      var loadSeed = (loadTimestamp ^ (loadTimestamp >>> 16)) >>> 0;
+      var featuredMote = KEYS[loadSeed % KEYS.length];
+
+      function seededRandom() {
+        loadSeed = (loadSeed * 1664525 + 1013904223) >>> 0;
+        return loadSeed / 4294967296;
+      }
+
       function rnd(a, b) {
-        return a + Math.random() * (b - a);
+        return a + seededRandom() * (b - a);
       }
       function pick(a) {
-        return a[Math.floor(Math.random() * a.length)];
+        return a[Math.floor(seededRandom() * a.length)];
       }
 
       var card = document.getElementById('card');
@@ -1323,11 +1272,11 @@
         layer.innerHTML = '';
         // 14 buoyant clinical & tech micro-motes rising gently from the bottom border like warm energy/vitality
         for (var i = 0; i < 14; i++) {
-          var key = pick(KEYS);
+          var key = i < 9 ? featuredMote : pick(KEYS);
           var isGold =
-            key === 'hexNode' || key === 'orbitDot' || Math.random() < 0.45;
+            key === 'hexNode' || key === 'orbitDot' || seededRandom() < 0.45;
           var color = isGold ? pick(GOLD) : pick(TEAL);
-          var size = rnd(12, 19);
+          var size = rnd(14, 23);
           var dur = rnd(14, 25);
 
           var el = document.createElement('div');
@@ -1337,7 +1286,7 @@
           el.style.left = lane + '%';
           el.style.width = size + 'px';
           el.style.height = size + 'px';
-          el.style.setProperty('--op', rnd(0.24, 0.44).toFixed(2));
+          el.style.setProperty('--op', rnd(0.38, 0.62).toFixed(2));
           el.style.animation = 'riseUp ' + dur.toFixed(1) + 's linear infinite';
           el.style.animationDelay = '-' + rnd(0, dur).toFixed(1) + 's';
 
@@ -1351,7 +1300,7 @@
           r.className = 'riser-spin';
           r.style.animationDuration = rnd(14, 28).toFixed(1) + 's';
           r.style.animationDirection =
-            Math.random() > 0.5 ? 'normal' : 'reverse';
+            seededRandom() > 0.5 ? 'normal' : 'reverse';
           r.innerHTML = MOTES[key](color);
 
           s.appendChild(r);
@@ -1367,23 +1316,6 @@
       buildRisers();
       measure();
       window.addEventListener('resize', measure);
-
-      document
-        .getElementById('reshuffle')
-        .addEventListener('click', buildRisers);
-      document.getElementById('record').addEventListener('click', function () {
-        document.body.classList.add('recording');
-        document.body.classList.remove('editing');
-      });
-      document.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape') {
-          document.body.classList.remove('recording');
-          document.body.classList.add('editing');
-        }
-      });
-      document.addEventListener('focusin', function (e) {
-        if (e.target.isContentEditable) document.body.classList.add('editing');
-      });
     </script>
   </body>
 </html>
